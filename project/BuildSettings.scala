@@ -33,7 +33,12 @@ object BuildSettings {
       "-deprecation",
       "-target:jvm-1.6",
       "-language:_",
-      "-Xlog-reflective-calls"
+      "-Xlog-reflective-calls",
+      //fixes #811 - IOException on compilation (filename too long) when code is checkout into an encrypted directory
+      //@see https://github.com/scala/pickling/issues/10
+      //& https://issues.scala-lang.org/browse/SI-8199
+      //This option can be removed if target scala >= 2.11.0-RC1
+      "-Xmax-classfile-name", "100"
     )
   )
 

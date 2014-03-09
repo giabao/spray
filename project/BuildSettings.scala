@@ -16,7 +16,7 @@ object BuildSettings {
   lazy val basicSettings = Seq(
     version               := NightlyBuildSupport.buildVersion(VERSION),
     homepage              := Some(new URL("http://spray.io")),
-    organization          := "io.spray",
+    organization          := "com.sandinh",
     organizationHomepage  := Some(new URL("http://spray.io")),
     description           := "A suite of lightweight Scala libraries for building and consuming RESTful " +
                              "web services on top of Akka",
@@ -50,7 +50,7 @@ object BuildSettings {
       SbtPgp.useGpg := true,
       publishTo <<= version { version =>
         Some {
-          if (version.contains("-") || true) { // sonatype publishing currently disabled
+          if (version.contains("-")) {
             "spray nexus" at {
               // public uri is repo.spray.io, we use an SSH tunnel to the nexus here
               "http://localhost:42424/content/repositories/" + {

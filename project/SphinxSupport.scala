@@ -11,7 +11,7 @@ object SphinxSupport {
   val generateDirectivesMapTarget = SettingKey[File]("generate-directives-map-file")
   val generateDirectivesMap = TaskKey[Seq[File]]("generate-directives-map", "Try to infer directives from source files")
 
-  val settings = seq(
+  val settings = Seq(
 
     sphinxScript := tryToLocateSphinx(),
 
@@ -73,7 +73,7 @@ object SphinxSupport {
    * location spray-routing/src/main/scala/spray/routing/directives/???Directives.scala
    */
   def generateDirectivesMap(routingSourceDir: File, targetFile: File): Seq[File] = {
-    targetFile.getParentFile().mkdirs()
+    targetFile.getParentFile.mkdirs()
     val fw = new java.io.FileWriter(targetFile)
 
     case class DirectivesGroup(group: String, directives: Seq[String])

@@ -147,7 +147,16 @@ private[parser] trait ProtocolParameterRules {
 
   /* 3.11 Entity Tags */
 
-  def EntityTag = rule { optional("W/") ~ OpaqueTag }
+  def EntityTag = rule { ("W/" ~ push(true) | push(false)) ~ OpaqueTag ~~> ((weak, tag) ⇒ spray.http.EntityTag(tag, weak)) }
 
   def OpaqueTag = rule { QuotedString }
+
+  /* 3.12 Range Units */ // http://tools.ietf.org/html/rfc2616#section-3.12
+
+  def `range-unit` = rule { `bytes-unit` | `other-range-unit` }
+
+  def `bytes-unit` = rule { ignoreCase("bytes") ~ push(RangeUnit.Bytes) }
+
+  def `other-range-unit` = rule { Token ~~> RangeUnit.Other }
+
 }

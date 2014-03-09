@@ -24,6 +24,7 @@ import spray.util._
 import MediaTypes._
 import HttpHeaders._
 import HttpCharsets._
+import org.specs2.matcher.MatchResult
 
 class FileAndResourceDirectivesSpec extends RoutingSpec {
 
@@ -92,7 +93,7 @@ class FileAndResourceDirectivesSpec extends RoutingSpec {
           parts(1).entity.data.asString === "QRSTUVWXYZ"
 
           status === StatusCodes.PartialContent
-          headers must not(haveOneElementLike { case `Content-Range`(_, _) ⇒ ok })
+          headers must not contain like({ case `Content-Range`(_, _) ⇒ ok }: PartialFunction[HttpHeader, MatchResult[_]])
           mediaType.withParameters(Map.empty) === `multipart/byteranges`
         }
       } finally file.delete
@@ -127,9 +128,10 @@ class FileAndResourceDirectivesSpec extends RoutingSpec {
         Get() ~> route ~> check {
           mediaType === `text/html`
           body.asString === "<p>Lorem"
-          headers must have {
+          headers must be contain ((_: HttpHeader) match {
             case `Last-Modified`(dt) ⇒ DateTime(2011, 7, 1) < dt && dt.clicks < System.currentTimeMillis()
-          }
+            case _                   ⇒ false
+          })
           chunks.map(_.data.asString).mkString === " ipsum!</p>"
         }
 

@@ -7,6 +7,7 @@ import sbtassembly.Plugin._
 import spray.revolver.RevolverPlugin.Revolver
 import com.typesafe.sbt.osgi.SbtOsgi
 import SbtOsgi._
+import java.net.InetSocketAddress
 
 object BuildSettings {
   val VERSION = "1.3.0"
@@ -93,15 +94,16 @@ object BuildSettings {
     javaOptions in Revolver.reStart ++= Seq("-verbose:gc", "-XX:+PrintCompilation")
   )
 
-  import com.github.siasia.WebPlugin._
+  import com.earldouglas.xsbtwebplugin.WebPlugin._
   lazy val jettyExampleSettings = exampleSettings ++ webSettings // ++ disableJettyLogSettings
 
-  import com.github.siasia.PluginKeys._
+  import com.earldouglas.xsbtwebplugin.PluginKeys._
   lazy val disableJettyLogSettings = inConfig(container.Configuration) {
     seq(
-      start <<= (state, port, apps, customConfiguration, configurationFiles, configurationXml) map {
-        (state, port, apps, cc, cf, cx) =>
-          state.get(container.attribute).get.start(port, None, Utils.NopLogger, apps, cc, cf, cx)
+      start <<= (state, host, port, apps, customConfiguration, configurationFiles, configurationXml) map {
+        (state, host, port, apps, cc, cf, cx) =>
+          val addr = new InetSocketAddress(host, port)
+          state.get(container.attribute).get.start(addr, None, Utils.NopLogger, apps, cc, cf, cx)
       }
     )
   }
